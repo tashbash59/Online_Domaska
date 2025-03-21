@@ -1,0 +1,46 @@
+/* Стили для страницы "О предмете" */
+
+body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0px;
+        }
+
+.subject-details {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+.subject-details h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.subject-info {
+    list-style-type: none;
+    padding: 0;
+}
+
+.subject-info-item {
+    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.subject-info-item strong {
+    color: #007bff;
+}

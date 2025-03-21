@@ -1,0 +1,42 @@
+body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .subject-table {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 колонки */
+            gap: 20px; /* Расстояние между ячейками */
+        }
+        .subject-cell {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .subject-cell h2 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .subject-cell p {
+            margin: 0;
+            font-size: 1rem;
+            color: #666;
+        }
+        .task-count {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #007bff;
+        }

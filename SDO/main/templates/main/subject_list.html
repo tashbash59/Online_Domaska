@@ -1,0 +1,26 @@
+{% extends "main/header.html" %}
+{% load static %}
+
+{% block title %}Список предметов{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/subject_list.css' %}">
+<div class="container mt-5">
+
+    <div class="subject-table">
+        {% for subject in subjects %}
+        <div class="subject-cell">
+            <h2>
+                <a href="{% url 'about_subjects' %}?subject_id={{ subject.id }}">
+                {{ subject.name }}
+                </a>
+            </h2>
+            <p>Препод</p>
+            <div class="task-count">* заданий</div>
+        </div>
+        {% empty %}
+        <h1 colspan="3" class="text-center">Нет доступных предметов.</h1>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

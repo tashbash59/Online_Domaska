@@ -1,0 +1,25 @@
+{% extends "main/header.html" %}
+{% load static %}
+
+{% block title %}О предмете{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/about_subject.css' %}">
+<div class="container mt-5">
+    <h1>Информация о предмете</h1>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <strong>Название:</strong> {{ subjects.name }}
+        </li>
+        <li class="list-group-item">
+            <strong>Преподаватель:</strong> {{ subjects.teacher }}
+        </li>
+        <li class="list-group-item">
+            <strong>Группа:</strong> {{ subjects.group }}
+        </li>
+        <li class="list-group-item">
+            <strong>Описание:</strong> {{ subjects.description }}
+        </li>
+    </ul>
+</div>
+{% endblock %}
