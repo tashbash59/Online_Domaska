@@ -34,7 +34,7 @@
                     {% for student in students %}
                         <tr>
                             <td>{{ student.id }}</td>
-                            <td><a href="http://127.0.0.1:8000/student-subjects/?student_id={{ student.id }}">{{ student.name }}</a></td>
+                            <td><a href="{% url 'student_subjects' %}?student_id={{ student.id }}">{{ student.name }}</a></td>
                             <td>{{ student.group.name }}</td>
                         </tr>
                     {% empty %}
