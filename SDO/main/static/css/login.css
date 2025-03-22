@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background-color: transparent;
+    padding: 2rem;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.logo {
+    margin-bottom: 1.5rem;  /* Отступ между логотипом и заголовком */
+}
+
+.logo img {
+    width: 150px;  /* Ширина логотипа */
+    height: auto;  /* Автоматическая высота для сохранения пропорций */
+}
+
+.login-container h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container input {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #fff;
+}
+
+.login-container button {
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.login-container button:hover {
+    background-color: #0056b3;
+}
+
+.login-container .error {
+    color: red;
+    margin-bottom: 1rem;
+}

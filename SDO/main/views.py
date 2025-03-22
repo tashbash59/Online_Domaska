@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from .models import Subject, Teacher, Group, Student, User
 from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm
 from django.contrib import messages
 
+@login_required(login_url='login')
 def subject_create(request):
     if request.method == 'POST':
         form = SubjectForm(request.POST)
@@ -15,6 +19,7 @@ def subject_create(request):
     subjects = Subject.objects.select_related('teacher', 'group').all()
     return render(request, 'main/subject_form.html', {'form': form, 'subjects': subjects})
 
+@login_required(login_url='login')
 def teacher_create(request):
     if request.method == 'POST':
         form = TeacherForm(request.POST)
@@ -27,6 +32,8 @@ def teacher_create(request):
     teacher = Teacher.objects.all()
     return render(request, 'main/teacher_form.html', {'form': form, 'teachers': teacher})
 
+
+@login_required(login_url='login')
 def group_create(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -43,6 +50,8 @@ def group_create(request):
     subjects = Group.objects.all()
     return render(request, 'main/group_form.html', {'form': form, 'subjects': subjects})
 
+
+@login_required(login_url='login')
 def student_create(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -55,6 +64,7 @@ def student_create(request):
     students = Student.objects.select_related('group').all()
     return render(request, 'main/student_form.html', {'form': form, 'students': students})
 
+@login_required(login_url='login')
 def student_subjects(request):
     students = Student.objects.all()  # Получаем всех студентов
     student_id = request.GET.get('student_id')
@@ -72,12 +82,14 @@ def student_subjects(request):
         'subjects': subjects,
     })
 
+@login_required(login_url='login')
 def about_subjects(request):
 	subject_id = request.GET.get('subject_id')
 	subjects = get_object_or_404(Subject, id=subject_id)
 	return render(request, 'main/about_subject.html', {'subjects': subjects})
 
 
+@login_required(login_url='login')
 def add_user(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -95,3 +107,28 @@ def add_user(request):
         'students': students,
         'teachers': teachers,
     })
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('main')  # Перенаправление на главную страницу после успешного входа
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'main/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
+def main(request):
+    user = request.user
+    role_name = user.get_role_name()
+    return render(request, 'main/main.html', {'role_name': role_name})

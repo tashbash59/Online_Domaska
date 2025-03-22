@@ -32,6 +32,11 @@ class User(AbstractUser):
         related_query_name='main_user',
     )
 
+    def get_role_name(self):
+        if self.role:
+            return self.role.name
+        return "Роль не указана"
+    
     def __str__(self):
         return self.username
 
@@ -86,7 +91,7 @@ class Subject(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', null=True, blank=True)
     name = models.CharField(max_length=255, verbose_name='ФИО')
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа',null=True,blank=True)
 
     def get_role(self):
         return self.user.role.name
@@ -96,7 +101,7 @@ class Student(models.Model):
 
     def get_password(self):
         return self.user.plain_password
-    
+
     def __str__(self):
         return self.name
 

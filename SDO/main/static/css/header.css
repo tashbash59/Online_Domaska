@@ -17,10 +17,9 @@ body {
     position: relative; /* Для корректного отображения тени */
 }
 
-.header .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
+.logo img {
+    width: 80px;  
+    height: auto;  
 }
 
 .header .user-info {

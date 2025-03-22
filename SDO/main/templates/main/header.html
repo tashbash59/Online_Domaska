@@ -19,7 +19,9 @@
             <div></div>
             <div></div>
         </div>
-        <div class="logo">Логотип</div>
+        <div class="logo">
+             <img src="{% static 'images/logo2.png' %}" alt="Логотип">
+        </div>
         <div class="user-info">
             <img src="https://cdn2.iconfinder.com/data/icons/user-interface-169/32/bell-1024.png" alt="Уведомления" class="notification-icon">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1024px-User_font_awesome.svg.png" alt="Пользователь">
@@ -38,6 +40,9 @@
                 <a href="{% url 'group_create' %}">Добавить группу</a>
                 <a href="{% url 'student_create' %}">Добавить студента</a>
                 <a href="{% url 'add-user' %}">Добавить пользователя</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-danger">Выйти</a>
+                {% endif %}
             </nav>
         </div>
 

@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
 
+LOGIN_URL = 'login' 
+AUTH_USER_MODEL = 'main.User'
+
 
 # Application definition
 

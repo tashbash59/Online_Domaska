@@ -1,5 +1,6 @@
 from django import forms
 from .models import Subject, Teacher, Group, Student,User, Role
+from django.contrib.auth.forms import AuthenticationForm
 import random
 import string
 
@@ -63,3 +64,8 @@ class UserForm(forms.Form):
             Teacher.objects.create(user=user, name=name)
 
         return user
+
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))

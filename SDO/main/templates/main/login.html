@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Домашка</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="{% static 'images/logo2.png' %}" alt="Логотип">
+        </div>
+        <h2>Добро пожаловать в Домашку</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" id="id_username" name="username" placeholder="Введите логин" required>
+            <input type="password" id="id_password" name="password" placeholder="Введите пароль" required>
+
+            {% if form.errors %}
+                <div class="error">Неверный логин или пароль.</div>
+            {% endif %}
+
+            <button type="submit">Далее</button>
+        </form>
+    </div>
+</body>
+</html>
