@@ -62,3 +62,9 @@ body {
     color: red;
     margin-bottom: 1rem;
 }
+
+@media (max-width: 768px) {
+    .login-container {
+        margin-top: -150px;  /* Поднимаем форму выше */
+    }
+}
