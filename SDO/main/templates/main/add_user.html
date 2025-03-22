@@ -1,0 +1,114 @@
+{% extends "main/header.html" %}
+{% load static %}
+
+
+{% block content %}
+<h2>Добавить пользователя</h2>
+
+<!-- Форма для добавления пользователя -->
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+    </div>
+    <div class="form-group">
+        {{ form.role.label_tag }}
+        {{ form.role }}
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+<!-- Поиск и таблица для студентов -->
+<h2 class="mt-5">Студенты</h2>
+<div class="mb-3">
+    <input type="text" id="searchStudent" class="form-control" placeholder="Поиск по ФИО студента...">
+</div>
+<table class="table table-bordered" id="studentTable">
+    <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>Роль</th>
+            <th>Логин</th>
+            <th>Пароль</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.get_role }}</td>
+            <td>{{ student.get_login }}</td>
+            <td>{{ student.get_password }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Нет студентов.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Поиск и таблица для преподавателей -->
+<h2 class="mt-5">Преподаватели</h2>
+<div class="mb-3">
+    <input type="text" id="searchTeacher" class="form-control" placeholder="Поиск по ФИО преподавателя...">
+</div>
+<table class="table table-bordered" id="teacherTable">
+    <thead>
+        <tr>
+            <th>ФИО</th>
+            <th>Роль</th>
+            <th>Логин</th>
+            <th>Пароль</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for teacher in teachers %}
+        <tr>
+            <td>{{ teacher.name }}</td>
+            <td>{{ teacher.get_role }}</td>
+            <td>{{ teacher.get_login }}</td>
+            <td>{{ teacher.get_password }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Нет преподавателей.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- JavaScript для поиска -->
+<script>
+    // Функция для поиска в таблице
+    function searchTable(inputId, tableId) {
+        const input = document.getElementById(inputId);
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById(tableId);
+        const rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) {  // Начинаем с 1, чтобы пропустить заголовок
+            const td = rows[i].getElementsByTagName("td")[0];  // Ищем в первом столбце (ФИО)
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // Поиск в таблице студентов
+    document.getElementById("searchStudent").addEventListener("keyup", function() {
+        searchTable("searchStudent", "studentTable");
+    });
+
+    // Поиск в таблице преподавателей
+    document.getElementById("searchTeacher").addEventListener("keyup", function() {
+        searchTable("searchTeacher", "teacherTable");
+    });
+</script>
+{% endblock %}
