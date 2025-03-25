@@ -53,18 +53,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const burgerMenu = document.getElementById('burgerMenu');
-        const sidebar = document.getElementById('sidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-
-        burgerMenu.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            document.body.classList.toggle('sidebar-active');
-        });
-
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            document.body.classList.remove('sidebar-active');
+        document.addEventListener('DOMContentLoaded', function() {
+            const burgerMenu = document.getElementById('burgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const closeSidebar = document.getElementById('closeSidebar');
+            
+            burgerMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+                sidebar.classList.toggle('active');
+                document.body.classList.toggle('no-scroll');
+            });
+            
+            closeSidebar.addEventListener('click', function() {
+                burgerMenu.classList.remove('active');
+                sidebar.classList.remove('active');
+                document.body.classList.remove('no-scroll');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!sidebar.contains(e.target) && !burgerMenu.contains(e.target)) {
+                    burgerMenu.classList.remove('active');
+                    sidebar.classList.remove('active');
+                    document.body.classList.remove('no-scroll');
+                }
+            });
         });
     </script>
 </body>

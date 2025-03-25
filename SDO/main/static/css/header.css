@@ -7,6 +7,11 @@ body {
     overflow: hidden;
 }
 
+/* Запрет прокрутки при открытом меню */
+.no-scroll {
+    overflow: hidden;
+}
+
 .header {
     grid-row: 1;
     display: flex;
@@ -51,6 +56,7 @@ body {
     background-color: #fafafa;
     padding: 20px;
     overflow-y: auto;
+    transition: transform 0.3s ease;
 }
 
 .sidebar h1 {
@@ -81,8 +87,8 @@ body {
 
 .content-area {
     overflow-y: auto;
-    background-color: #fafafa; /* Светлый фон */
-    padding: 25px; /* Отступ для закругленных краев */
+    background-color: #fafafa;
+    padding: 25px;
 }
 
 .content-container {
@@ -91,9 +97,9 @@ body {
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    background-color: #ffffff; /* Белый фон для контейнера */
-    border-radius: 15px; /* Закругленные углы */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Легкая тень для объема */
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Стили для карточек */
@@ -106,6 +112,50 @@ body {
     border: 1px solid #f0f0f0;
 }
 
+/* Стили для бургер-меню */
+.burger-menu {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 10px;
+    margin-right: 15px;
+    z-index: 1100;
+}
+
+.burger-menu div {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 3px 0;
+    transition: all 0.3s ease;
+}
+
+/* Анимация бургер-меню */
+.burger-menu.active div:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.burger-menu.active div:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-menu.active div:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+.close-sidebar {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    z-index: 1100;
+}
+
 /* Адаптивные стили */
 @media (max-width: 992px) {
     .content-area {
@@ -113,21 +163,22 @@ body {
     }
     .content-container {
         padding: 20px;
-        border-radius: 8px; /* Меньшее скругление на планшетах */
+        border-radius: 8px;
     }
 }
 
 @media (max-width: 768px) {
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+    
     .content-area {
         padding: 0;
     }
+    
     .content-container {
-        border-radius: 0; /* На мобильных убираем скругление */
+        border-radius: 0;
         box-shadow: none;
-    }
-
-    .main-container {
-        grid-template-columns: 1fr;
     }
     
     .sidebar {
@@ -135,47 +186,20 @@ body {
         top: 60px;
         left: -250px;
         height: calc(100vh - 60px);
-        z-index: 90;
-        transition: transform 0.3s ease;
+        width: 250px;
+        z-index: 1000;
     }
     
     .sidebar.active {
         transform: translateX(250px);
     }
     
-    .burger-menu {
+    .burger-menu,
+    .close-sidebar {
         display: flex;
     }
     
-    .close-sidebar {
-        display: block;
+    .burger-menu {
+        display: flex;
     }
-}
-
-/* Стили для бургер-меню */
-.burger-menu {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    padding: 10px;
-}
-
-.burger-menu div {
-    width: 25px;
-    height: 3px;
-    background-color: #333;
-    margin: 4px 0;
-    transition: 0.3s;
-}
-
-.close-sidebar {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #333;
 }
