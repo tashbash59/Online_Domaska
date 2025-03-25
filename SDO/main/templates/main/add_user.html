@@ -28,7 +28,6 @@
     <thead>
         <tr>
             <th>ФИО</th>
-            <th>Роль</th>
             <th>Логин</th>
             <th>Пароль</th>
         </tr>
@@ -37,7 +36,6 @@
         {% for student in students %}
         <tr>
             <td>{{ student.name }}</td>
-            <td>{{ student.get_role }}</td>
             <td>{{ student.get_login }}</td>
             <td>{{ student.get_password }}</td>
         </tr>
@@ -58,7 +56,6 @@
     <thead>
         <tr>
             <th>ФИО</th>
-            <th>Роль</th>
             <th>Логин</th>
             <th>Пароль</th>
         </tr>
@@ -67,7 +64,6 @@
         {% for teacher in teachers %}
         <tr>
             <td>{{ teacher.name }}</td>
-            <td>{{ teacher.get_role }}</td>
             <td>{{ teacher.get_login }}</td>
             <td>{{ teacher.get_password }}</td>
         </tr>
