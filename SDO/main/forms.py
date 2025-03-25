@@ -3,6 +3,7 @@ from .models import Subject, Teacher, Group, Student,User, Role
 from django.contrib.auth.forms import AuthenticationForm
 import random
 import string
+from main.utils.letters import convert_fio_to_english
 
 
 class SubjectForm(forms.ModelForm):
@@ -38,12 +39,20 @@ def generate_unique_username(name):
 
 
 class UserForm(forms.Form):
-    name = forms.CharField(max_length=255, label='Имя')
+    name = forms.CharField(
+        label='ФИО (полностью кириллицей)',
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Пример: Иванов Иван Иванович'
+        }),
+        help_text='Введите фамилию, имя и отчество через пробел')
     role = forms.ModelChoiceField(queryset=Role.objects.all(), label='Роль')
+
 
     def save(self):
         # Генерация логина и пароля
-        name = self.cleaned_data['name']
+        name = convert_fio_to_english(self.cleaned_data['name'])
         role = self.cleaned_data['role']
 
         # Генерация логина (например, имя в нижнем регистре без пробелов)

@@ -1,25 +1,27 @@
 body {
-    display: flex;
-    flex-direction: column;
     margin: 0;
     font-family: Arial, sans-serif;
     height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
 }
 
 .header {
+    grid-row: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #ffffff;
     padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 100; /* Убедимся, что header выше основного содержимого */
-    position: relative; /* Для корректного отображения тени */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    position: relative;
 }
 
 .logo img {
-    width: 80px;  
-    height: auto;  
+    width: 80px;
+    height: auto;
 }
 
 .header .user-info {
@@ -39,24 +41,23 @@ body {
     height: 25px;
 }
 
-.container {
-    display: flex;
-    flex: 1;
-    overflow: hidden; /* Чтобы тень header не обрезалась */
+.main-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    height: calc(100vh - 60px);
 }
 
 .sidebar {
-    width: 250px;
-    background-color: #f8f9fa;
+    background-color: #fafafa;
     padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    z-index: 50; /* Убедимся, что sidebar ниже header */
+    overflow-y: auto;
 }
 
 .sidebar h1 {
     font-size: 1.5rem;
     text-align: center;
     margin-bottom: 20px;
+    color: #333;
 }
 
 .sidebar nav {
@@ -74,62 +75,86 @@ body {
 }
 
 .sidebar nav a:hover {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #ffffff;
-    overflow-y: auto; /* Добавляем прокрутку, если контент слишком длинный */
-    display: block; /* Убедимся, что main-content является блочным элементом */
-}
-
-/* Стили для формы и списка преподавателей */
-.card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px; /* Отступ между формой и списком преподавателей */
-}
-
-.list-group {
-    list-style-type: none;
-    padding: 0;
-}
-
-.list-group-item {
-    background-color: #f8f9fa;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.list-group-item strong {
+    background-color: #f0f0f0;
     color: #007bff;
 }
 
-.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+.content-area {
+    overflow-y: auto;
+    background-color: #fafafa; /* Светлый фон */
+    padding: 25px; /* Отступ для закругленных краев */
 }
 
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+.content-container {
+    padding: 30px;
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff; /* Белый фон для контейнера */
+    border-radius: 15px; /* Закругленные углы */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Легкая тень для объема */
 }
+
+/* Стили для карточек */
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    border: 1px solid #f0f0f0;
+}
+
+/* Адаптивные стили */
+@media (max-width: 992px) {
+    .content-area {
+        padding: 10px;
+    }
+    .content-container {
+        padding: 20px;
+        border-radius: 8px; /* Меньшее скругление на планшетах */
+    }
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        padding: 0;
+    }
+    .content-container {
+        border-radius: 0; /* На мобильных убираем скругление */
+        box-shadow: none;
+    }
+
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: -250px;
+        height: calc(100vh - 60px);
+        z-index: 90;
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.active {
+        transform: translateX(250px);
+    }
+    
+    .burger-menu {
+        display: flex;
+    }
+    
+    .close-sidebar {
+        display: block;
+    }
+}
+
 /* Стили для бургер-меню */
 .burger-menu {
-    display: none; /* По умолчанию скрыто */
+    display: none;
     flex-direction: column;
     cursor: pointer;
     padding: 10px;
@@ -143,34 +168,8 @@ body {
     transition: 0.3s;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -250px; /* Скрываем меню за пределами экрана */
-        height: 100vh;
-        z-index: 1000;
-        transition: transform 0.3s ease;
-    }
-
-    .sidebar.active {
-        transform: translateX(250px); /* Показываем меню */
-    }
-
-    .burger-menu {
-        display: flex; /* Показываем бургер-меню на мобильных устройствах */
-    }
-
-    .main-content {
-        margin-left: 0; /* Убираем отступ для основного содержимого */
-    }
-}
-
-
-/* Стили для кнопки закрытия */
 .close-sidebar {
-    display: none; /* По умолчанию скрыта */
+    display: none;
     position: absolute;
     top: 10px;
     right: 10px;
@@ -179,11 +178,4 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     color: #333;
-}
-
-/* Показываем кнопку закрытия на мобильных устройствах */
-@media (max-width: 768px) {
-    .close-sidebar {
-        display: block; /* Показываем кнопку закрытия */
-    }
 }
