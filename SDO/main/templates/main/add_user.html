@@ -1,6 +1,10 @@
 {% extends "main/header.html" %}
 {% load static %}
-
+{% block nav %}
+<h3>
+    <a href="{% url 'main' %}">На главную</a>
+</h3>
+{% endblock %}
 
 {% block content %}
 <h2>Добавить пользователя</h2>

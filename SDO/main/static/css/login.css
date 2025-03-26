@@ -36,20 +36,28 @@ body {
 }
 
 .login-container input {
+    height: 28px;
     padding: 0.75rem;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 15px;
     font-size: 1rem;
     background-color: #fff;
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.login-container input:focus {
+    outline: none;
+    border-color: #008DD2; /* Новый цвет границы */
+    box-shadow: 0 0 0 2px rgba(0, 141, 210, 0.3); /* Свечение */
 }
 
 .login-container button {
     padding: 0.75rem;
-    background-color: #007bff;
+    background-color: #008DD2;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px;
     font-size: 1rem;
     cursor: pointer;
 }
@@ -65,6 +73,6 @@ body {
 
 @media (max-width: 768px) {
     .login-container {
-        margin-top: -150px;  /* Поднимаем форму выше */
+        margin-top: -200px;  /* Поднимаем форму выше */
     }
 }
