@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import Subject, Teacher, Group, Student, User
-from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm
+from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm,GroupCreateForm
 from django.contrib import messages
 
 @login_required(login_url='login')
@@ -132,3 +132,19 @@ def main(request):
     user = request.user
     role_name = user.get_role_name()
     return render(request, 'main/main.html', {'role_name': role_name})
+
+
+
+def create_group(request):
+    if request.method == 'POST':
+        form = GroupCreateForm(request.POST)
+        if form.is_valid():
+            group = form.save()
+            # Назначаем выбранных студентов в группу
+            students = form.cleaned_data['students']
+            students.update(group=group)
+            return redirect('create_group')  # Перенаправляем на список групп
+    else:
+        form = GroupCreateForm()
+    
+    return render(request, 'main/create_group.html', {'form': form})

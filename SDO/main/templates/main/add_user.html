@@ -1,5 +1,6 @@
 {% extends "main/header.html" %}
 {% load static %}
+
 {% block nav %}
 <h3>
     <a href="{% url 'main' %}">На главную</a>
@@ -7,28 +8,92 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/add_user.css' %}">
 <h2>Добавить пользователя</h2>
 
 <!-- Форма для добавления пользователя -->
 <form method="post">
     {% csrf_token %}
-    <div class="form-group">
-        {{ form.name.label_tag }}
-        {{ form.name }}
+    <div class="auth-form">
+        <div class="form-row">
+            <div class="form-group">
+                <!-- <label for="id_name">ФИО (полностью кириллицей)</label> -->
+                <div class="input-container">
+                    <input type="text" 
+                           id="id_name" 
+                           name="name" 
+                           class="form-input" 
+                           placeholder="ФИО полностью">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <!-- <label for="id_role">Роль</label> -->
+                <div class="input-container">
+                    <select id="id_role" name="role" class="form-input">
+                        {% for role in form.role.field.queryset %}
+                            <option value="{{ role.id }}">{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" id="groupField" style="display: none;">
+                <!-- <label for="id_group">Группа</label> -->
+                <div class="input-container">
+                    <select id="id_group" name="group" class="form-input">
+                        {% for group in form.group.field.queryset %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <button type="submit" class="submit-btn">Далее</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        {{ form.role.label_tag }}
-        {{ form.role }}
-    </div>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleSelect = document.querySelector('#id_role');
+        const groupField = document.querySelector('#groupField');
+        
+        // Проверяем при загрузке страницы
+        toggleGroupField();
+        
+        // Следим за изменениями выбора роли
+        roleSelect.addEventListener('change', toggleGroupField);
+        
+        function toggleGroupField() {
+            const selectedRole = roleSelect.options[roleSelect.selectedIndex].text;
+            if (selectedRole.toLowerCase() === 'студент') {
+                groupField.style.display = 'block';
+            } else {
+                groupField.style.display = 'none';
+            }
+        }
+    });
+</script>
 
 <!-- Поиск и таблица для студентов -->
 <h2 class="mt-5">Студенты</h2>
-<div class="mb-3">
-    <input type="text" id="searchStudent" class="form-control" placeholder="Поиск по ФИО студента...">
+<div class="search-container">
+    <div class="search-wrapper">
+        <button class="search-icon" id="searchToggleStudent">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </button>
+        <input type="text" id="searchStudent" class="search-input" placeholder="Поиск по ФИО студента...">
+    </div>
 </div>
-<table class="table table-bordered" id="studentTable">
+<table class="table table-bordered styled-table" id="studentTable">
     <thead>
         <tr>
             <th>ФИО</th>
@@ -53,10 +118,18 @@
 
 <!-- Поиск и таблица для преподавателей -->
 <h2 class="mt-5">Преподаватели</h2>
-<div class="mb-3">
-    <input type="text" id="searchTeacher" class="form-control" placeholder="Поиск по ФИО преподавателя...">
+<div class="search-container">
+    <div class="search-wrapper">
+        <button class="search-icon" id="searchToggleTeacher">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </button>
+        <input type="text" id="searchTeacher" class="search-input" placeholder="Поиск по ФИО студента...">
+    </div>
 </div>
-<table class="table table-bordered" id="teacherTable">
+<table class="table table-bordered styled-table" id="teacherTable">
     <thead>
         <tr>
             <th>ФИО</th>
@@ -81,15 +154,52 @@
 
 <!-- JavaScript для поиска -->
 <script>
-    // Функция для поиска в таблице
+    // Плавное открытие поиска
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchToggleStudent = document.getElementById('searchToggleStudent');
+        const searchInputStudent = document.getElementById('searchStudent');
+        
+        searchToggleStudent.addEventListener('click', function() {
+            searchInputStudent.classList.toggle('active');
+            if (searchInputStudent.classList.contains('active')) {
+                searchInputStudent.focus();
+            }
+        });
+        
+        // Для преподавателей (если нужно)
+        const searchToggleTeacher = document.getElementById('searchToggleTeacher');
+        const searchInputTeacher = document.getElementById('searchTeacher');
+        
+        if (searchToggleTeacher) {
+            searchToggleTeacher.addEventListener('click', function() {
+                searchInputTeacher.classList.toggle('active');
+                if (searchInputTeacher.classList.contains('active')) {
+                    searchInputTeacher.focus();
+                }
+            });
+        }
+        
+        // Закрытие поиска при клике вне поля
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-wrapper') && 
+                !e.target.classList.contains('search-icon')) {
+                searchInputStudent.classList.remove('active');
+                if (searchInputTeacher) {
+                    searchInputTeacher.classList.remove('active');
+                }
+            }
+        });
+    });
+    
+    // Ваш существующий код поиска
     function searchTable(inputId, tableId) {
         const input = document.getElementById(inputId);
         const filter = input.value.toUpperCase();
         const table = document.getElementById(tableId);
         const rows = table.getElementsByTagName("tr");
 
-        for (let i = 1; i < rows.length; i++) {  // Начинаем с 1, чтобы пропустить заголовок
-            const td = rows[i].getElementsByTagName("td")[0];  // Ищем в первом столбце (ФИО)
+        for (let i = 1; i < rows.length; i++) {
+            const td = rows[i].getElementsByTagName("td")[0];
             if (td) {
                 const txtValue = td.textContent || td.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -101,12 +211,10 @@
         }
     }
 
-    // Поиск в таблице студентов
     document.getElementById("searchStudent").addEventListener("keyup", function() {
         searchTable("searchStudent", "studentTable");
     });
 
-    // Поиск в таблице преподавателей
     document.getElementById("searchTeacher").addEventListener("keyup", function() {
         searchTable("searchTeacher", "teacherTable");
     });

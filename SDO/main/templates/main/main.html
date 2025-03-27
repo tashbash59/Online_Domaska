@@ -71,7 +71,8 @@
         // Рассчитываем количество видимых карточек
         function getVisibleCards() {
             const containerWidth = document.querySelector('.carousel-container').offsetWidth;
-            return Math.min(4, Math.max(1, Math.floor(containerWidth / 420))); // 400px + 20px gap
+            const cardWidth = 400 + 20; // 400px + 20px gap
+            return Math.min(4, Math.max(1, Math.floor(containerWidth / cardWidth)));
         }
         
         // Создаем точки навигации

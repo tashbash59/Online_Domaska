@@ -11,5 +11,6 @@ urlpatterns = [
     path('add-User/', views.add_user, name='add-user'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('groups/create/', views.create_group, name='create_group'),
     path('', views.main, name='main'),
 ]

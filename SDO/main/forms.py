@@ -44,19 +44,23 @@ class UserForm(forms.Form):
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Пример: Иванов Иван Иванович'
+            'placeholder': 'ФИО полностью'
         }),
         help_text='Введите фамилию, имя и отчество через пробел')
     role = forms.ModelChoiceField(queryset=Role.objects.all(), label='Роль')
+    group = forms.ModelChoiceField(queryset=Group.objects.all(), label='Группа')
 
 
     def save(self):
         # Генерация логина и пароля
-        name = convert_fio_to_english(self.cleaned_data['name'])
+        name = self.cleaned_data['name']
+        print(name)
+        login_name = convert_fio_to_english(name)
         role = self.cleaned_data['role']
+        group = self.cleaned_data['group']
 
         # Генерация логина (например, имя в нижнем регистре без пробелов)
-        login = generate_unique_username(name)
+        login = generate_unique_username(login_name)
         # Генерация пароля (например, случайная строка)
         password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
 
@@ -68,7 +72,7 @@ class UserForm(forms.Form):
 
         # Создание записи в таблице Student или Teacher в зависимости от роли
         if role.name == 'Студент':
-            Student.objects.create(user=user, name=name)
+            Student.objects.create(user=user, name=name,group=group)
         elif role.name == 'Преподаватель':
             Teacher.objects.create(user=user, name=name)
 
@@ -78,3 +82,19 @@ class UserForm(forms.Form):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+
+class GroupCreateForm(forms.ModelForm):
+    students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.filter(group__isnull=True),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Студенты без группы'
+    )
+
+    class Meta:
+        model = Group
+        fields = ['name', 'students']
+        labels = {
+            'name': 'Название группы'
+        }

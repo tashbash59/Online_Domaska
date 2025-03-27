@@ -1,0 +1,222 @@
+.auth-form {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px;
+        font-family: Arial, sans-serif;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .form-group:last-child {
+        flex: 0 0 auto;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: normal;
+        color: #333;
+    }
+
+    .input-container {
+        height: 42px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        font-size: 16px;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #4285f4;
+    }
+
+    .help-text {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .submit-btn {
+        padding: 0 30px;
+        height: 100%;
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        white-space: nowrap;
+    }
+
+    .submit-btn:hover {
+        background-color: #3367d6;
+    }
+
+    @media (max-width: 992px) {
+        .form-row {
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1 1 45%;
+        }
+        
+        .form-group:last-child {
+            flex: 1 1 100%;
+            justify-content: flex-end;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .form-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .form-group {
+            flex: 1 1 100%;
+        }
+        
+        .input-container {
+            height: auto;
+        }
+        
+        .form-input, .submit-btn {
+            height: 42px;
+            width: 100%;
+        }
+        .styled-table {
+            size: 10px;
+            min-width: 300px;
+        }
+    }
+
+.styled-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        word-break: break-word; /* Переносит длинные слова */
+        overflow-wrap: break-word; /* Альтернатива для некоторых браузеров */
+    }
+    
+    .styled-table thead th {
+        background-color: white; /* Белый фон вместо синего */
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 2px solid #e0e0e0; /* Синяя нижняя граница */
+        border-top: 2px solid #e0e0e0; /* Серая верхняя граница */
+        position: relative;
+    }
+    
+    /* Вертикальные границы между заголовками */
+    .styled-table thead th:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 25%;
+        height: 50%;
+        width: 1px;
+        background-color: #e0e0e0;
+    }
+    
+    .styled-table tbody td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
+        white-space: normal !important; /* Отменяет nowrap если был */
+        word-break: break-all; /* Более агрессивный перенос */
+        hyphens: auto; /* Добавляет переносы с дефисами если нужно */
+        max-width: 200px; /* Ограничение ширины для принудительного переноса */
+    }
+    
+    .styled-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* Скругление углов */
+    .styled-table thead tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+    
+    .styled-table thead tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+    
+    .styled-table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 10px;
+    }
+    
+    .styled-table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 10px;
+    }
+    
+    /* Эффект при наведении */
+    .styled-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+.search-container {
+        margin-bottom: 20px;
+    }
+    
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    
+    .search-icon {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        margin-right: 5px;
+        transition: transform 0.3s;
+    }
+    
+    .search-icon:hover {
+        transform: scale(1.1);
+    }
+    
+    .search-input {
+        outline: none;
+        width: 0;
+        padding: 0;
+        border: none;
+        border-bottom: 2px solid #4285f4;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        opacity: 0;
+        position: absolute;
+        right: 40px;
+    }
+    
+    .search-input.active {
+        width: 250px;
+        padding: 8px 15px;
+        opacity: 1;
+        position: static;
+    }
