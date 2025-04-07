@@ -2,60 +2,102 @@
 
 {% block content %}
 {% load static %}
+{% block nav %}{% endblock %}
 <link rel="stylesheet" href="{% static 'css/main_page.css' %}">
 
 <div class="content-wrapper">
+    {% if urgent_tasks %}
     <div class="deadline-header">Скоро дедлайн</div>
-
     <div class="carousel-container">
         <button class="carousel-btn btn-prev">‹</button>
-        
         <div class="carousel">
-            <!-- Повторяющиеся карточки -->
-            {% for i in "123456" %}
+            {% for task in urgent_tasks %}
             <div class="card">
-                <div class="card-title">Базы данных</div>
-                <div class="card-subject">Колягин М.А.</div>
-                <div class="card-task">Практическое задание</div>
+                <div class="card-title">{{ task.subject.name }}</div>
+                <div class="card-subject">{{ task.teacher.name }}</div>
+                <div class="card-task">{{ task.title }}</div>
                 <div class="card-number">№ {{ forloop.counter }}</div>
-                <div class="card-date">14.05.06</div>
+                <div class="card-date">{{ task.deadline|date:"d.m.Y" }}</div>
             </div>
             {% endfor %}
         </div>
-        
         <button class="carousel-btn btn-next">›</button>
     </div>
-
+    {% endif %}
     <div class="dots-container">
         <!-- Точки будут добавлены через JavaScript -->
     </div>
 
     <div class="assignments-container">
-        <h2 class="assignments-header">Мои задания</h2>
-        
-        <div class="assignment-cards">
-            {% for i in "123456"%}
-            <!-- Карточка 1 -->
-            <div class="task-card">
-                <div class="task-header">
-                    <div class="task-deadline">Скоро дедлайн</div>
-                    <div class="task-subject">Базы данных</div>
-                    <div class="task-teacher">Колягин М.А.</div>
-                </div>
-                
-                <h3 class="task-title">Создать базу данных для интернет-магазина</h3>
-                
-                <p class="task-description">
-                    Создать базу данных на основании работы на практическом задании.<br>
-                    Прикрепить Word файл с обоснованием решения
-                </p>
-                
-                <div class="task-footer">
-                    <div class="due-date">сдать до:<br><span class="date">30.04.2024</span></div>
-                    <button class="view-button">Посмотреть</button>
-                </div>
+
+        <div class="assignments-header-container">
+            <h2 class="assignments-header">Мои задания</h2>
+            {% if role_name == 'Преподаватель' %}
+            <a href="{% url 'create_task' %}" class="create-task-button">
+                + Создать задание
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="filters-container">
+            <div class="filter-group">
+                <select id="subject-filter" class="filter-select">
+                    <option value="all">Все предметы</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            {% endfor %}
+            
+            <div class="filter-group">
+                <select id="status-filter" class="filter-select">
+                    <option value="all">Все статусы</option>
+                    <option value="new">Новое</option>
+                    <option value="deadline-soon">Скоро дедлайн</option>
+                    <option value="in-progress">В работе</option>
+                    <option value="overdue">Просрочено</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <select id="date-filter" class="filter-select">
+                    <option value="all">Все даты</option>
+                    <option value="today">Сегодня</option>
+                    <option value="week">На этой неделе</option>
+                    <option value="month">В этом месяце</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="assignment-cards">
+            {% if tasks %}
+                {% for task in tasks %}
+                <div class="task-card" 
+                    data-subject="{{ task.subject.id }}" 
+                    data-status="{{ task.status_class }}" 
+                    data-deadline="{{ task.deadline|date:'Y-m-d' }}"
+                >
+                    <div class="task-header">
+                        <div class="task-status {{ task.status_class }}">{{ task.status }}</div>
+                        <div class="task-subject">{{ task.subject.name }}</div>
+                        <div class="task-teacher">{{ task.teacher.name }}</div>
+                    </div>
+                    
+                    <h3 class="task-title">{{ task.title }}</h3>
+                    
+                    <p class="task-description">
+                        {{ task.description|truncatechars:100 }}
+                    </p>
+                    
+                    <div class="task-footer">
+                        <div class="due-date">сдать до:<br><span class="date">{{ task.deadline|date:"d.m.Y" }}</span></div>
+                        <button class="view-button">Посмотреть</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Нет заданий</p>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -159,5 +201,60 @@
             updateCarousel();
         });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+    const filters = {
+        subject: document.getElementById('subject-filter'),
+        status: document.getElementById('status-filter'),
+        date: document.getElementById('date-filter')
+    };
+    const taskCards = document.querySelectorAll('.task-card');
+    const today = new Date();
+
+    function applyFilters() {
+        taskCards.forEach(card => {
+            const matches = {
+                subject: filters.subject.value === 'all' || 
+                         card.dataset.subject === filters.subject.value,
+                status: filters.status.value === 'all' || 
+                        card.dataset.status === filters.status.value,
+                date: checkDateFilter(card.dataset.deadline)
+            };
+
+            const shouldShow = matches.subject && matches.status && matches.date;
+
+            // Плавное переключение видимости
+            if (shouldShow) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+
+    function checkDateFilter(deadline) {
+        if (filters.date.value === 'all') return true;
+        
+        const deadlineDate = new Date(deadline);
+        const diffTime = deadlineDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        switch(filters.date.value) {
+            case 'today': return diffDays === 0;
+            case 'week': return diffDays >= 0 && diffDays <= 7;
+            case 'month': return deadlineDate.getMonth() === today.getMonth();
+            default: return true;
+        }
+    }
+
+    // Добавляем обработчики с debounce для плавности
+    let filterTimeout;
+    Object.values(filters).forEach(filter => {
+        filter.addEventListener('change', () => {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(applyFilters, 150);
+        });
+    });
+});
 </script>
 {% endblock %}
+

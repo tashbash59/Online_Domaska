@@ -17,7 +17,6 @@
 
 .assignments-header {
     padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
     margin-top: 40px;
 }
 
@@ -161,8 +160,8 @@
 .assignment-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(1200px, 1fr));
-    gap: 25px;
-    padding: 0 15px;
+    gap: 20px;
+    transition: all 0.3s ease;
 }
 
 .task-card {
@@ -171,12 +170,30 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 25px;
     font-family: Arial, sans-serif;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+    height: auto;
+    overflow: hidden;
+}
+
+.task-card.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
 }
 
 .task-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .task-header {
@@ -258,7 +275,7 @@
     background: #3498db;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 10px 20px;
     font-size: 15px;
     cursor: pointer;
@@ -366,5 +383,96 @@
     .deadline-header,
     .assignments-header {
         font-size: 24px;
+    }
+}
+
+
+.task-status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.task-status.new {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+.task-status.deadline-soon {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.task-status.в-работе {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.assignments-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.create-task-button {
+    background-color: #3498db; /* Зеленый цвет */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.create-task-button:hover {
+    background-color: #2980b9; /* Темно-зеленый при наведении */
+}
+/* Стили для контейнера фильтров */
+.filters-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.filter-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+    cursor: pointer;
+}
+.filter-select:focus {
+    outline: none;
+    border-color: #008DD2; /* Новый цвет границы */
+    box-shadow: 0 0 0 2px rgba(0, 141, 210, 0.3); /* Свечение */
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .filter-group {
+        width: 100%;
     }
 }

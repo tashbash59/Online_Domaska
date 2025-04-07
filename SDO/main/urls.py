@@ -12,5 +12,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('groups/create/', views.create_group, name='create_group'),
+    path('tasks/create/', views.create_task, name='create_task'),
+    path('ajax/load-groups/', views.load_groups, name='load_groups'),
+    path('ajax/validate-group/', views.validate_group, name='validate_group'),
     path('', views.main, name='main'),
 ]

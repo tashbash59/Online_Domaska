@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,  Group, Permission
-
+from django.utils import timezone
 
 class Role(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название роли', unique=True)
@@ -77,7 +77,8 @@ class Group(models.Model):
 class Subject(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='Преподаватель')
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    groups = models.ManyToManyField(Group, related_name='subjects')
+
     description = models.CharField(max_length=255, verbose_name='Описание',null=True,  # Разрешает NULL в базе данных
         blank=True)
 
@@ -108,4 +109,48 @@ class Student(models.Model):
     class Meta:
         verbose_name = 'Студент'
         verbose_name_plural = 'Студенты'
+
+class Task(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Название задачи')
+    description = models.TextField(verbose_name='Описание задачи')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name='Предмет')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    created_at = models.DateField(auto_now_add=True, verbose_name='Дата создания')
+    deadline = models.DateField(verbose_name='Срок выполнения')
+
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = 'Задачи'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.subject.name})"
+
+class TaskSubmission(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Задача')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    solution = models.TextField(verbose_name='Решение')
+    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата отправки')
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('submitted', 'Отправлено'),
+            ('checked', 'Проверено'),
+            ('rejected', 'Отклонено'),
+            ('accepted', 'Принято')
+        ],
+        default='submitted',
+        verbose_name='Статус'
+    )
+    teacher_comment = models.TextField(blank=True, null=True, verbose_name='Комментарий преподавателя')
+
+    class Meta:
+        verbose_name = 'Отправка задачи'
+        verbose_name_plural = 'Отправки задач'
+        unique_together = ['task', 'student']
+
+    def __str__(self):
+        return f"Решение {self.student.name} для {self.task.title}"
+
 

@@ -1,0 +1,132 @@
+{% extends "main/header.html" %}
+{% load static %}
+{% load markdownify %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/create_task.css' %}">
+    <form method="post" enctype="multipart/form-data" class="task-form" id='taskForm'>
+        <div class="form-header">
+            <button type="submit" class="submit-button">сохранить</button>
+        </div>
+        
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title }}
+        </div>
+        
+        <div class="form-group">
+            {{ form.description }}
+        </div>
+        
+        <div class="form-section">
+            <div class="deadline-group-container">
+                <div class="deadline-field">
+                    <label class="group-label">Срок сдачи</label>
+                    {{ form.deadline }}
+                </div>
+                <div class="group-field">
+                    <label class="group-label">Предмет</label>
+                    {{ form.subject }}
+                </div>
+                <div class="subject-field">
+                    <label class="group-label">Группа</label>
+                    {{ form.group }}
+                </div>
+            </div>
+        </div>
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p>{{ field }}: {{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <button type="submit" class="mobile-save-button">Сохранить</button>
+    </form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('taskForm');
+    const subjectSelect = document.getElementById('id_subject');
+    const groupSelect = document.getElementById('id_group');
+    
+    // Загрузка групп при изменении предмета
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', function() {
+            const subjectId = this.value;
+            groupSelect.innerHTML = '<option value="">Загрузка...</option>';
+            
+            if (subjectId) {
+                fetch(`/ajax/load-groups/?subject_id=${subjectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        groupSelect.innerHTML = '';
+                        
+                        if (data.groups && data.groups.length > 0) {
+                            // Добавляем пустой вариант
+                            const emptyOption = document.createElement('option');
+                            emptyOption.value = '';
+                            emptyOption.textContent = '---------';
+                            groupSelect.appendChild(emptyOption);
+                            
+                            // Добавляем доступные группы
+                            data.groups.forEach(group => {
+                                const option = document.createElement('option');
+                                option.value = group.id;
+                                option.textContent = group.name;
+                                groupSelect.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = 'Нет доступных групп';
+                            groupSelect.appendChild(option);
+                        }
+                    });
+            } else {
+                groupSelect.innerHTML = '<option value="">---------</option>';
+            }
+        });
+        
+        // Инициализация при загрузке страницы
+        if (subjectSelect.value) {
+            subjectSelect.dispatchEvent(new Event('change'));
+        }
+    }
+    
+    // Обработка отправки формы
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Проверяем, что выбрана группа
+            if (groupSelect.value === '') {
+                e.preventDefault();
+                alert('Пожалуйста, выберите группу');
+                groupSelect.focus();
+                return;
+            }
+            
+            // Дополнительная проверка валидности группы
+            const selectedGroup = groupSelect.value;
+            const subjectId = subjectSelect.value;
+            
+            if (selectedGroup && subjectId) {
+                // Можно добавить дополнительную проверку через AJAX
+                e.preventDefault(); // Временно отключаем отправку для проверки
+                
+                fetch(`/ajax/validate-group/?subject_id=${subjectId}&group_id=${selectedGroup}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.valid) {
+                            form.submit(); // Если группа валидна, отправляем форму
+                        } else {
+                            alert('Выбранная группа не принадлежит этому предмету');
+                            groupSelect.focus();
+                        }
+                    });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

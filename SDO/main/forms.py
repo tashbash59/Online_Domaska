@@ -1,16 +1,29 @@
 from django import forms
-from .models import Subject, Teacher, Group, Student,User, Role
+from .models import Subject, Teacher, Group, Student,User, Role, Task
 from django.contrib.auth.forms import AuthenticationForm
 import random
 import string
 from main.utils.letters import convert_fio_to_english
+from django.utils import timezone
+from ckeditor.widgets import CKEditorWidget
 
 
 class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subject
-        fields = ['name', 'teacher', 'group','description']
+        fields = ['name', 'teacher', 'groups', 'description']  # Заменили group на groups
+        widgets = {
+            'groups': forms.SelectMultiple(attrs={'class': 'form-control'})  # Для множественного выбора
+        }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Если нужно фильтровать группы для преподавателя
+        if 'teacher' in kwargs:
+            teacher = kwargs['teacher']
+            self.fields['groups'].queryset = Group.objects.filter(
+                subjects__teacher=teacher
+            ).distinct()
 class TeacherForm(forms.ModelForm):
     class Meta:
         model = Teacher
@@ -98,3 +111,63 @@ class GroupCreateForm(forms.ModelForm):
         labels = {
             'name': 'Название группы'
         }
+
+
+class TaskCreateForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'subject', 'group', 'deadline']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'placeholder': 'Введите название',
+                'class': 'title-placeholder',
+                'style': 'font-size: 24px; font-weight: bold;'
+            }),
+            'description': forms.Textarea(attrs={
+                'placeholder': 'Введите описание задачи, чтобы студентам было проще разобраться в нём',
+                'rows': 4,
+                'id': 'description-textarea',
+                'class': 'description-placeholder',
+                'style': 'font-size: 16px; font-weight: normal;'
+            }),
+            'deadline': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'subject': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'id_subject'  # Добавляем ID для JavaScript
+            }),
+            'group': forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'id_group'  # Добавляем ID для JavaScript
+            }),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        teacher = kwargs.pop('teacher', None)
+        super().__init__(*args, **kwargs)
+        
+        if teacher:
+            # Фильтруем предметы по преподавателю
+            self.fields['subject'].queryset = teacher.subject_set.all()
+            
+            # Инициализируем queryset для групп как пустой
+            self.fields['group'].queryset = Group.objects.filter(
+                subjects__teacher=teacher
+            ).distinct()
+            
+            # Если форма привязана к существующему объекту
+            if self.instance.pk and self.instance.subject:
+                # Обновляем queryset групп для выбранного предмета
+                self.fields['group'].queryset = self.instance.subject.groups.all()
+    def clean(self):
+        cleaned_data = super().clean()
+        subject = cleaned_data.get('subject')
+        group = cleaned_data.get('group')
+        
+        if subject and group:
+            if not subject.groups.filter(id=group.id).exists():
+                self.add_error('group', 'Выбранная группа не преподается для этого предмета')
+        
+        return cleaned_data

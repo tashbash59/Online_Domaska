@@ -1,23 +1,30 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import Subject, Teacher, Group, Student, User
-from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm,GroupCreateForm
+from django.views.decorators.http import require_GET
+from .models import Subject, Teacher, Group, Student, User, Task
+from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm,GroupCreateForm,TaskCreateForm
 from django.contrib import messages
-
+from django.http import JsonResponse,HttpResponseForbidden
 @login_required(login_url='login')
 def subject_create(request):
     if request.method == 'POST':
         form = SubjectForm(request.POST)
         if form.is_valid():
-            form.save()
+            subject = form.save(commit=False)
+            subject.save()
+            form.save_m2m()  # Важно для сохранения ManyToMany связей
             messages.success(request, 'Предмет успешно добавлен!')
             return redirect('subject_create')
     else:
         form = SubjectForm()
-    subjects = Subject.objects.select_related('teacher', 'group').all()
+    
+    # Изменяем запрос для получения предметов
+    subjects = Subject.objects.select_related('teacher').prefetch_related('groups').all()
     return render(request, 'main/subject_form.html', {'form': form, 'subjects': subjects})
+
 
 @login_required(login_url='login')
 def teacher_create(request):
@@ -66,15 +73,21 @@ def student_create(request):
 
 @login_required(login_url='login')
 def student_subjects(request):
-    students = Student.objects.all()  # Получаем всех студентов
+    students = Student.objects.all()
     student_id = request.GET.get('student_id')
-    selected_student = get_object_or_404(Student, id=student_id)
-    subjects = Subject.objects.filter(group=selected_student.group)
+    
+    if student_id:
+        selected_student = get_object_or_404(Student, id=student_id)
+        # Изменяем запрос для ManyToMany связи
+        subjects = Subject.objects.filter(groups=selected_student.group)
+    else:
+        selected_student = None
+        subjects = None
 
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         selected_student = get_object_or_404(Student, id=student_id)
-        subjects = Subject.objects.filter(group=selected_student.group)  # Получаем предметы группы студента
+        subjects = Subject.objects.filter(groups=selected_student.group)
 
     return render(request, 'main/subject_list.html', {
         'students': students,
@@ -84,9 +97,9 @@ def student_subjects(request):
 
 @login_required(login_url='login')
 def about_subjects(request):
-	subject_id = request.GET.get('subject_id')
-	subjects = get_object_or_404(Subject, id=subject_id)
-	return render(request, 'main/about_subject.html', {'subjects': subjects})
+    subject_id = request.GET.get('subject_id')
+    subject = get_object_or_404(Subject.objects.prefetch_related('groups'), id=subject_id)
+    return render(request, 'main/about_subject.html', {'subject': subject})
 
 
 @login_required(login_url='login')
@@ -131,10 +144,87 @@ def logout_view(request):
 def main(request):
     user = request.user
     role_name = user.get_role_name()
-    return render(request, 'main/main.html', {'role_name': role_name})
+    
+    context = {'role_name': role_name}
+    today = timezone.now().date()
+    
+    if role_name == 'Преподаватель':
+        try:
+            teacher = request.user.teacher
+            tasks = Task.objects.filter(teacher=teacher).order_by('-created_at')
+            urgent_tasks = []
+            
+            for task in tasks:
+                created_date = task.created_at.date() if hasattr(task.created_at, 'date') else task.created_at
+                deadline = task.deadline
+                
+                if created_date == today or (today - created_date).days <= 1:
+                    if deadline and (deadline - today).days <= 2:
+                        task.status = "Скоро дедлайн"
+                        task.status_class = "deadline-soon"
+                    else:
+                        task.status = "Новое"
+                        task.status_class = "new"
+                else:
+                    task.status = "В работе"
+                    task.status_class = "in-progress"
 
+                if task.status == "Скоро дедлайн":
+                    urgent_tasks.append(task)
 
+            context.update({
+                'tasks': tasks,
+                'urgent_tasks': urgent_tasks
+            })
 
+        except Teacher.DoesNotExist:
+            pass
+    
+    elif role_name == 'Студент':
+        try:
+            student = request.user.student
+            if student.group:
+                # Получаем задачи для группы студента
+                tasks = Task.objects.filter(group=student.group).order_by('-created_at')
+                student_tasks = []
+                urgent_tasks = []
+                
+                for task in tasks:
+                    created_date = task.created_at.date() if hasattr(task.created_at, 'date') else task.created_at
+                    deadline = task.deadline
+                    
+                    if created_date == today or (today - created_date).days <= 1:
+                        if deadline and (deadline - today).days <= 2:
+                            task.status = "Скоро дедлайн"
+                            task.status_class = "deadline-soon"
+                            urgent_tasks.append(task)
+                        else:
+                            task.status = "Новое"
+                            task.status_class = "new"
+                    else:
+                        task.status = "В работе"
+                        task.status_class = "in-progress"
+                    
+                    student_tasks.append(task)
+
+                context.update({
+                    'tasks': student_tasks,
+                    'urgent_tasks': urgent_tasks
+                })
+                
+        except Student.DoesNotExist:
+            pass
+    
+    if role_name == 'Преподаватель':
+        # Добавьте список предметов в контекст
+        context['subjects'] = request.user.teacher.subject_set.all()
+    elif role_name == 'Студент':
+        # Для студентов тоже можно добавить предметы
+        context['subjects'] = Subject.objects.filter(groups=request.user.student.group)
+    
+    return render(request, 'main/main.html', context)
+
+@login_required
 def create_group(request):
     if request.method == 'POST':
         form = GroupCreateForm(request.POST)
@@ -148,3 +238,70 @@ def create_group(request):
         form = GroupCreateForm()
     
     return render(request, 'main/create_group.html', {'form': form})
+
+@login_required
+def create_task(request):
+    try:
+        teacher = request.user.teacher
+    except Teacher.DoesNotExist:
+        return HttpResponseForbidden("Доступ только для преподавателей")
+
+    if request.method == 'POST':
+        form = TaskCreateForm(request.POST, teacher=teacher)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.teacher = teacher
+            task.save()
+            return redirect('main')
+        print(form.errors)
+    else:
+        form = TaskCreateForm(teacher=teacher)
+
+    return render(request, 'main/create_task.html', {'form': form})
+
+@login_required
+@require_GET
+def load_groups(request):
+    try:
+        teacher = request.user.teacher
+    except Teacher.DoesNotExist:
+        return JsonResponse({'error': 'Доступ только для преподавателей'}, status=403)
+    
+    subject_id = request.GET.get('subject_id')
+    if not subject_id:
+        return JsonResponse({'groups': []})
+    
+    try:
+        # Изменяем запрос для ManyToMany связи
+        groups = Group.objects.filter(
+            subjects__id=subject_id,
+            subjects__teacher=teacher
+        ).distinct().values('id', 'name')
+        return JsonResponse({'groups': list(groups)})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+@require_GET
+def validate_group(request):
+    try:
+        teacher = request.user.teacher
+    except Teacher.DoesNotExist:
+        return JsonResponse({'error': 'Доступ только для преподавателей'}, status=403)
+    
+    subject_id = request.GET.get('subject_id')
+    group_id = request.GET.get('group_id')
+    
+    if not subject_id or not group_id:
+        return JsonResponse({'valid': False})
+    
+    try:
+        # Изменяем проверку для ManyToMany связи
+        valid = Group.objects.filter(
+            id=group_id,
+            subjects__id=subject_id,
+            subjects__teacher=teacher
+        ).exists()
+        return JsonResponse({'valid': valid})
+    except Exception as e:
+        return JsonResponse({'valid': False, 'error': str(e)})

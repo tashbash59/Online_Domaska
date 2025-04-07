@@ -94,6 +94,7 @@ body {
 
 .content-container {
     padding: 30px;
+    padding-bottom: 100px;
     max-width: 1600px;
     margin: 0 auto;
     width: 100%;
@@ -209,4 +210,24 @@ body {
     padding-left: 25px;
 }
 
+.icon-link {
+    display: inline-flex;    /* Гибкое расположение элементов */
+    align-items: center;    /* Выравнивание по вертикали */
+    text-decoration: none;  /* Убираем подчеркивание */
+    color: inherit;        /* Наследуем цвет текста */
+    margin: 15px 0 15px 10px; /* Отступы: верх право низ лево */
+    font-size: 16px;       /* Ваш размер шрифта */
+    line-height: 1.5;      /* Межстрочный интервал */
+}
 
+.link-icon {
+    width: 1em;           /* Размер равен размеру шрифта */
+    height: 1em;          /* Сохраняем пропорции */
+    margin-right: 0.5em;  /* Отступ между иконкой и текстом */
+    object-fit: contain;  /* Сохраняем пропорции картинки */
+    vertical-align: middle; /* Выравнивание по вертикали */
+}
+
+.link-text {
+    vertical-align: middle; /* Выравнивание текста */
+}
