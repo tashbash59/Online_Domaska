@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
+from main.utils.letters import convert_to_short_name
 from .models import Subject, Teacher, Group, Student, User, Task
 from .forms import SubjectForm, TeacherForm, GroupForm, StudentForm,UserForm,GroupCreateForm,TaskCreateForm
 from django.contrib import messages
@@ -157,8 +158,11 @@ def main(request):
             for task in tasks:
                 created_date = task.created_at.date() if hasattr(task.created_at, 'date') else task.created_at
                 deadline = task.deadline
-                
-                if created_date == today or (today - created_date).days <= 1:
+                task.teacher_short_name = convert_to_short_name(task.teacher.name)
+                if deadline and deadline < today:
+                        task.status = "Просрочено"
+                        task.status_class = "overdue"
+                elif created_date == today or (today - created_date).days <= 1:
                     if deadline and (deadline - today).days <= 2:
                         task.status = "Скоро дедлайн"
                         task.status_class = "deadline-soon"
@@ -192,8 +196,12 @@ def main(request):
                 for task in tasks:
                     created_date = task.created_at.date() if hasattr(task.created_at, 'date') else task.created_at
                     deadline = task.deadline
-                    
-                    if created_date == today or (today - created_date).days <= 1:
+                    task.teacher_short_name = convert_to_short_name(task.teacher.name)
+
+                    if deadline and deadline < today:
+                        task.status = "Просрочено"
+                        task.status_class = "overdue"
+                    elif created_date == today or (today - created_date).days <= 1:
                         if deadline and (deadline - today).days <= 2:
                             task.status = "Скоро дедлайн"
                             task.status_class = "deadline-soon"
@@ -247,7 +255,7 @@ def create_task(request):
         return HttpResponseForbidden("Доступ только для преподавателей")
 
     if request.method == 'POST':
-        form = TaskCreateForm(request.POST, teacher=teacher)
+        form = TaskCreateForm(request.POST, request.FILES, teacher=teacher)
         if form.is_valid():
             task = form.save(commit=False)
             task.teacher = teacher
@@ -305,3 +313,29 @@ def validate_group(request):
         return JsonResponse({'valid': valid})
     except Exception as e:
         return JsonResponse({'valid': False, 'error': str(e)})
+
+@login_required
+def task_detail(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    today = timezone.now().date()
+    
+    # Определяем статус задачи (аналогично main)
+    created_date = task.created_at.date() if hasattr(task.created_at, 'date') else task.created_at
+    deadline = task.deadline
+    
+    if deadline and deadline < today:
+        task.status = "Просрочено"
+        task.status_class = "overdue"
+    elif created_date == today or (today - created_date).days <= 1:
+        if deadline and (deadline - today).days <= 2:
+            task.status = "Скоро дедлайн"
+            task.status_class = "deadline-soon"
+        else:
+            task.status = "Новое"
+            task.status_class = "new"
+    else:
+        task.status = "В работе"
+        task.status_class = "in-progress"
+    
+
+    return render(request, 'main/task_about.html', {'task': task})

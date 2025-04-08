@@ -118,7 +118,14 @@ class Task(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='Преподаватель')
     created_at = models.DateField(auto_now_add=True, verbose_name='Дата создания')
     deadline = models.DateField(verbose_name='Срок выполнения')
+    file = models.FileField(
+        upload_to='task_files/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name='Прикрепленный файл'
+    )
 
+    
     class Meta:
         verbose_name = 'Задача'
         verbose_name_plural = 'Задачи'

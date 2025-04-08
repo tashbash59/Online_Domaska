@@ -28,3 +28,28 @@ def convert_fio_to_english(fio):
     latin_initials = ''.join([TRANSLIT_DICT.get(c.lower(), c) for c in initials])
     
     return f"{latin_last_name}{latin_initials}"
+
+def convert_to_short_name(full_name):
+    """
+    Преобразует полное ФИО в формат "Фамилия И.О."
+    
+    Примеры:
+    "Иванов Иван Иванович" → "Иванов И.И."
+    "Петрова Анна" → "Петрова А."
+    "Сидоров" → "Сидоров"
+    """
+    parts = full_name.split()
+    
+    if not parts:
+        return ""
+    
+    # Фамилия всегда первая
+    last_name = parts[0]
+    
+    if len(parts) == 1:
+        return last_name
+    
+    # Берем первые буквы остальных слов (имя и отчество)
+    initials = [f"{name[0]}." for name in parts[1:]]
+    
+    return f"{last_name} {' '.join(initials)}"

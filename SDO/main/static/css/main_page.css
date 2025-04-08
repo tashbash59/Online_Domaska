@@ -15,6 +15,8 @@
     padding-left: 15px;
 }
 
+
+
 .assignments-header {
     padding-bottom: 15px;
     margin-top: 40px;
@@ -35,7 +37,10 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    padding: 20px 15px;
+    padding-top: 5px;
+    padding-right: 15px;
+    padding-bottom: 20px;
+    padding-left: 15px;
     scrollbar-width: none;
 }
 
@@ -45,10 +50,10 @@
 
 .card {
     flex: 0 0 auto; /* Убираем гибкость */
-    width: 400px; /* Фиксированная ширина */
-    min-width: 400px; /* Запрещаем уменьшение */
-    height: 280px; /* Фиксированная высота */
-    min-height: 280px;
+    width: 300px; /* Фиксированная ширина */
+    min-width: 300px; /* Запрещаем уменьшение */
+    height: 200px; /* Фиксированная высота */
+    min-height: 200px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
@@ -61,29 +66,35 @@
 }
 
 .card-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #2c3e50;
+    font-size: 16px;
+    color: #7f8c8d;
     margin-bottom: 15px;
+    background-attachment: gray;
 }
 
 .card-subject {
-    font-size: 18px;
+    font-size: 16px;
     color: #7f8c8d;
-    margin-bottom: 40px;
+    margin-bottom: 15px;
     flex-grow: 0;
+}
+.card-about {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 20px;
 }
 
 .card-task {
+    font-weight: 600;
     font-size: 20px;
     color: #34495e;
     margin-bottom: 15px;
 }
 
 .card-number {
-    font-size: 20px;
-    font-weight: 600;
-    color: #3498db;
+    font-size: 18px;
+    color: #7f8c8d;
     margin-bottom: 30px;
     flex-grow: 0;
 }
@@ -280,6 +291,7 @@
     font-size: 15px;
     cursor: pointer;
     transition: background 0.3s;
+    text-decoration: none;
 }
 
 .view-button:hover {
@@ -414,8 +426,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
 }
 
 .create-task-button {
@@ -465,6 +477,16 @@
     box-shadow: 0 0 0 2px rgba(0, 141, 210, 0.3); /* Свечение */
 }
 
+.link-icon {
+    width: 1em;           /* Размер равен размеру шрифта */
+    height: 1em;          /* Сохраняем пропорции */
+    margin-right: 0.5em;  /* Отступ между иконкой и текстом */
+    object-fit: contain;  /* Сохраняем пропорции картинки */
+    vertical-align: middle; /* Выравнивание по вертикали */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.0);
+}
+
+
 /* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
     .filters-container {
@@ -475,4 +497,10 @@
     .filter-group {
         width: 100%;
     }
+}
+
+/* Добавьте в ваш CSS */
+.task-status.overdue {
+    background-color: #ffebee;
+    color: #c62828;
 }

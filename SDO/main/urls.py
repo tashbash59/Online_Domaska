@@ -15,5 +15,6 @@ urlpatterns = [
     path('tasks/create/', views.create_task, name='create_task'),
     path('ajax/load-groups/', views.load_groups, name='load_groups'),
     path('ajax/validate-group/', views.validate_group, name='validate_group'),
+    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
     path('', views.main, name='main'),
 ]

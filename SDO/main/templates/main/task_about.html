@@ -1,0 +1,45 @@
+{% extends "main/header.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/task_detail.css' %}">
+
+    <!-- Шапка с статусом и дедлайном -->
+    <div class="task-header">
+        <div class="task-meta">
+            <span class="task-status {{ task.status_class }}">{{ task.status }}</span>
+            <span class="task-subject">{{ task.subject.name }}</span>
+        </div>
+        <div class="task-deadline">
+            Сдать до: <span class="deadline-date">{{ task.deadline|date:"d.m.Y" }}</span>
+        </div>
+    </div>
+
+    <!-- Название задачи -->
+    <h1 class="task-title">{{ task.title }}</h1>
+
+    <!-- Описание задачи -->
+    <div class="task-description">
+        {{ task.description|linebreaks }}
+    </div>
+
+    <!-- Прикрепленные файлы -->
+    <div class="task-files">
+        <h3 class="files-title">Прикреплённые файлы</h3>
+        <div class="files-list">
+            {% if task.file %}
+            <div class="file-item">
+                <label for="file-{{ forloop.counter }}" class="file-link">
+                    <a href="{{ file.file.url }}" download class="file-link">
+                        <span class="file-name">{{ task.file.name|cut:"task_files/" }}</span>
+                    </a>
+                    <span class="file-size">{{ task.file.size|filesizeformat }}</span>
+                </label>
+            </div>
+            {% else %}
+            <p class="no-files">Нет прикрепленных файлов</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

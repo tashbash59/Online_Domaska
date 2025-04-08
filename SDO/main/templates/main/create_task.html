@@ -33,6 +33,21 @@
                     {{ form.group }}
                 </div>
             </div>
+            <div class="file-upload-area">
+                <h3 class="file-upload-title">Прикреплённые файлы</h3>
+                <div class="drop-zone" id="dropZone">
+                    <input type="file" name="file" id="file-upload" class="file-input" multiple>
+                    <label for="file-upload" class="drop-zone-label">
+                        <div class="drop-zone-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="drop-zone-text" id="dropZoneText">
+                            Выберите файлы или перетяните их сюда
+                        </div>
+                    </label>
+                    <div class="file-preview" id="filePreview"></div>
+                </div>
+            </div>
         </div>
         {% if form.errors %}
             <div class="alert alert-danger">
@@ -126,6 +141,99 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             }
         });
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('file-upload');
+    const filePreview = document.getElementById('filePreview');
+    const dropZoneText = document.getElementById('dropZoneText');
+
+    // Обработчики событий
+    fileInput.addEventListener('change', handleFileSelection);
+    
+    // Drag and drop обработчики
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('dragleave', handleDragLeave);
+    dropZone.addEventListener('drop', handleDrop);
+
+    function handleFileSelection() {
+        updateFilePreview(this.files);
+        updateDropZoneText(this.files);
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    }
+
+    function handleDragLeave() {
+        dropZone.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            updateFilePreview(fileInput.files);
+            updateDropZoneText(fileInput.files);
+        }
+    }
+
+    function updateDropZoneText(files) {
+        if (files && files.length > 0) {
+            dropZoneText.style.display = 'none';
+        } else {
+            dropZoneText.style.display = 'block';
+        }
+    }
+
+    function updateFilePreview(files) {
+        filePreview.innerHTML = '';
+        
+        if (!files || files.length === 0) {
+            updateDropZoneText(null);
+            return;
+        }
+
+        // Создаем превью для каждого файла
+        Array.from(files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-preview-item';
+            
+            fileItem.innerHTML = `
+                <span class="file-preview-name">${file.name}</span>
+                <span class="file-preview-remove" data-index="${index}">×</span>
+            `;
+            
+            filePreview.appendChild(fileItem);
+        });
+
+        // Добавляем обработчики для кнопок удаления
+        document.querySelectorAll('.file-preview-remove').forEach(btn => {
+            btn.addEventListener('click', function() {
+                removeFileFromList(parseInt(this.getAttribute('data-index')));
+            });
+        });
+    }
+
+    function removeFileFromList(index) {
+        const dt = new DataTransfer();
+        const files = fileInput.files;
+        
+        // Копируем все файлы кроме удаляемого
+        for (let i = 0; i < files.length; i++) {
+            if (i !== index) {
+                dt.items.add(files[i]);
+            }
+        }
+        
+        // Обновляем input и превью
+        fileInput.files = dt.files;
+        updateFilePreview(dt.files);
+        updateDropZoneText(dt.files);
     }
 });
 </script>

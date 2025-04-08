@@ -116,7 +116,7 @@ class GroupCreateForm(forms.ModelForm):
 class TaskCreateForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'subject', 'group', 'deadline']
+        fields = ['title', 'description', 'subject', 'group', 'deadline','file']
         widgets = {
             'title': forms.TextInput(attrs={
                 'placeholder': 'Введите название',
@@ -141,6 +141,10 @@ class TaskCreateForm(forms.ModelForm):
             'group': forms.Select(attrs={
                 'class': 'form-control',
                 'id': 'id_group'  # Добавляем ID для JavaScript
+            }),
+            'file': forms.FileInput(attrs={
+                'class': 'file-input',
+                'id': 'file-upload'
             }),
         }
     

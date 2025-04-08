@@ -273,3 +273,123 @@ input:focus, textarea:focus {
 .mobile-save-button {
     display: none;
 }
+
+/* Стили для области загрузки файлов */
+.file-upload-area {
+    margin-top: 30px;
+}
+
+.file-upload-title {
+    font-size: 18px;
+    color: #5f6368;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.drop-zone:hover {
+    border-color: #4285f4;
+    background-color: #f8f9fa;
+}
+
+.drop-zone.drag-over {
+    border-color: #4285f4;
+    background-color: #e8f0fe;
+}
+
+.drop-zone-label {
+    display: block;
+    cursor: pointer;
+}
+
+.drop-zone-icon {
+    font-size: 48px;
+    color: #4285f4;
+    margin-bottom: 15px;
+}
+
+.drop-zone-text {
+    color: #5f6368;
+    font-size: 16px;
+}
+
+.file-input {
+    display: none;
+}
+
+/* Стили для превью файлов */
+.file-preview {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.file-preview-item {
+    background: #f1f3f4;
+    border-radius: 6px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-preview-name {
+    font-size: 14px;
+    color: #333;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-preview-remove {
+    color: #d93025;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .drop-zone {
+        padding: 20px;
+    }
+    
+    .drop-zone-icon {
+        font-size: 36px;
+    }
+    
+    .drop-zone-text {
+        font-size: 14px;
+    }
+}
+
+.drop-zone-text {
+    color: #5f6368;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: block; /* Важно для правильной работы */
+}
+
+.drop-zone-text.hidden {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.file-preview {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    transition: all 0.3s ease;
+}

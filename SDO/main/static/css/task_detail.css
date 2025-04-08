@@ -1,0 +1,138 @@
+.task-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.task-status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.task-status.new {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+.task-status.deadline-soon {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.task-status.overdue {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.task-status.in-progress {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.task-subject {
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+}
+
+.task-deadline {
+    font-size: 16px;
+    color: #5f6368;
+}
+
+.deadline-date {
+    font-weight: 500;
+    color: #333;
+}
+
+.task-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.task-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 30px;
+    white-space: pre-wrap;
+}
+
+.task-files {
+    margin-top: 30px;
+    padding-top: 20px;
+}
+
+.files-title {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.file-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.file-name {
+    color: #4285f4;
+    font-weight: 500;
+}
+
+.file-size {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.no-files {
+    color: #5f6368;
+    font-style: italic;
+}
+.content-area p {
+     padding-left: 0px; 
+}
+
+/* Чекбоксы */
+input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+}

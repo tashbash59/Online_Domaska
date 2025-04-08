@@ -7,16 +7,20 @@
 
 <div class="content-wrapper">
     {% if urgent_tasks %}
-    <div class="deadline-header">Скоро дедлайн</div>
+    <div class="deadline-header">
+        <img src="{% static 'images/lightning-02.svg' %}" alt="" class="link-icon">
+        Скоро дедлайн
+    </div>
     <div class="carousel-container">
         <button class="carousel-btn btn-prev">‹</button>
         <div class="carousel">
             {% for task in urgent_tasks %}
             <div class="card">
-                <div class="card-title">{{ task.subject.name }}</div>
-                <div class="card-subject">{{ task.teacher.name }}</div>
+                <div class='card-about'>
+                    <div class="card-title">{{ task.subject.name }}</div>
+                    <div class="card-subject">{{ task.teacher_short_name }}</div>
+                </div>
                 <div class="card-task">{{ task.title }}</div>
-                <div class="card-number">№ {{ forloop.counter }}</div>
                 <div class="card-date">{{ task.deadline|date:"d.m.Y" }}</div>
             </div>
             {% endfor %}
@@ -91,7 +95,7 @@
                     
                     <div class="task-footer">
                         <div class="due-date">сдать до:<br><span class="date">{{ task.deadline|date:"d.m.Y" }}</span></div>
-                        <button class="view-button">Посмотреть</button>
+                        <a href="{% url 'task_detail' task.id %}" class="view-button">Посмотреть</a>
                     </div>
                 </div>
                 {% endfor %}
