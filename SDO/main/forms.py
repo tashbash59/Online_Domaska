@@ -5,7 +5,6 @@ import random
 import string
 from main.utils.letters import convert_fio_to_english
 from django.utils import timezone
-from ckeditor.widgets import CKEditorWidget
 
 
 class SubjectForm(forms.ModelForm):
