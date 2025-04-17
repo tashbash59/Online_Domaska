@@ -1,5 +1,5 @@
 from django import forms
-from .models import Subject, Teacher, Group, Student,User, Role, Task
+from .models import Subject, Teacher, Group, Student,User, Role, Task, TaskSubmission
 from django.contrib.auth.forms import AuthenticationForm
 import random
 import string
@@ -175,3 +175,38 @@ class TaskCreateForm(forms.ModelForm):
                 self.add_error('group', 'Выбранная группа не преподается для этого предмета')
         
         return cleaned_data
+
+class TaskSubmissionForm(forms.Form):
+    solution = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 10,
+            'placeholder': 'Введите ваше решение здесь...'
+        }),
+        required=True,
+        label='Текстовое решение'
+    )
+    
+    solution_file = forms.FileField(
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control-file'
+        }),
+        required=False,
+        label='Файл с решением (необязательно)'
+    )
+
+class GradeForm(forms.ModelForm):
+    class Meta:
+        model = TaskSubmission
+        fields = ['grade', 'teacher_comment']
+        widgets = {
+            'grade': forms.NumberInput(attrs={
+                'min': 1,
+                'max': 100,
+                'class': 'form-control'
+            }),
+            'teacher_comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            })
+        }

@@ -4,8 +4,9 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/task_detail.css' %}">
 
+<div class="content-container task-detail-section">
     <!-- Шапка с статусом и дедлайном -->
-    <div class="task-header">
+    <div class="task-header-deadline">
         <div class="task-meta">
             <span class="task-status {{ task.status_class }}">{{ task.status }}</span>
             <span class="task-subject">{{ task.subject.name }}</span>
@@ -14,10 +15,18 @@
             Сдать до: <span class="deadline-date">{{ task.deadline|date:"d.m.Y" }}</span>
         </div>
     </div>
-
-    <!-- Название задачи -->
-    <h1 class="task-title">{{ task.title }}</h1>
-
+    <div class="title_icon">
+        <!-- Название задачи -->
+        <h1 class="task-title">{{ task.title }}</h1>
+        {% if role_name == 'Преподаватель' %}
+        <a href="{% url 'update_task' task.id %}">
+            <img src="{% static 'images/ButtonContainer.svg' %}" alt="" class="link-icon-update">
+        </a>
+        {% endif %}
+        {% if role_name == "Студент" and not task_submission %}
+            <a href="{% url 'submit_task' task.id %}" class="view-button desktop-button">Сдать задание</a>
+        {% endif %}
+    </div>
     <!-- Описание задачи -->
     <div class="task-description">
         {{ task.description|linebreaks }}
@@ -30,7 +39,7 @@
             {% if task.file %}
             <div class="file-item">
                 <label for="file-{{ forloop.counter }}" class="file-link">
-                    <a href="{{ file.file.url }}" download class="file-link">
+                    <a href="{{ task.file.url }}" download class="file-link">
                         <span class="file-name">{{ task.file.name|cut:"task_files/" }}</span>
                     </a>
                     <span class="file-size">{{ task.file.size|filesizeformat }}</span>
@@ -41,5 +50,136 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Мобильная кнопка (только для студентов) -->
+    {% if role_name == "Студент" %}
+        <div class="mobile-button-container">
+            <a href="{% url 'submit_task' task.id %}" class="view-button mobile-button">Сдать задание</a>
+        </div>
+    {% endif %}
+</div>
+{% if task_submissions %}
+<div class="content-container other-tasks-section">
+    <h2 class="section-title">Ответы</h2>
+    <div class="assignment-cards">
+        {% for task in task_submissions %}
+            <div class="task-card">
+                <div class="task-header">
+                    <div class="task-status {{ task.status }}">{{ task.get_status_display  }}</div>
+                    <div class="task-teacher">{{ task.student.name }}</div>
+                    <div class="task-teacher">{{ task.student.group.name }}</div>
+                </div>
+                            
+                <p class="task-description">
+                    {{ task.solution|truncatechars:100 }}
+                </p>
+                            
+                <div class="task-footer">
+                    {% if task.status == "graded" %}
+                        <div>
+                            <span class="grade 
+                                    {% if task.grade < 60 %}grade-red
+                                    {% elif task.grade < 75 %}grade-orange
+                                    {% elif task.grade < 90 %}grade-gray
+                                    {% else %}grade-green
+                                    {% endif %}">
+                                {{ task.grade }}
+                            </span>
+                            <span class="grade-max">/100</span>
+                        </div>
+                    {% else %}
+                        <div class="due-date">сдано:<br><span class="date">{{ task.submitted_at|date:"d.m.Y" }}</span></div>
+                    {% endif %}
+                    <div class="task-buttons">
+                        <a href="{% url 'submission_detail' task.id %}" class="view-button desktop-button">Посмотреть</a>
+                        <a href="{% url 'submission_detail' task.id %}" class="view-button mobile-button">Посмотреть</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% if task_submission %}
+<div class="content-container other-tasks-section">
+    <h2 class="section-title">Мой ответ</h2>
+    <div class="task-header-deadline">
+        <div class="task-meta">
+            <span class="task-status {{ task_submission.status }}">{{ task_submission.get_status_display }}</span>
+        </div>
+    </div>
+    <!-- Описание задачи -->
+    <div class="task-description">
+        {{task_submission.solution|linebreaks }}
+    </div>
+
+    <!-- Прикрепленные файлы -->
+    <div class="task-files">
+        <h3 class="files-title">Прикреплённые файлы</h3>
+        <div class="files-list">
+            {% if task.file %}
+            <div class="file-item">
+                <label for="file-{{ forloop.counter }}" class="file-link">
+                    <a href="{{ task_submission.solution_file.url }}" download class="file-link">
+                        <span class="file-name">{{ task_submission.solution_file.name|cut:"task_files/" }}</span>
+                    </a>
+                    <span class="file-size">{{ task_submission.solution_file.size|filesizeformat }}</span>
+                </label>
+            </div>
+            {% else %}
+            <p class="no-files">Нет прикрепленных файлов</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if task_submission.grade %}
+        <div class="task-files">
+            <h2 class="section-title">Ответ преподавателя</h3>
+            <div class="task-description">
+                {{task_submission.teacher_comment|linebreaks }}
+            </div>
+            <span class="grade 
+                    {% if task.grade < 60 %}grade-red
+                    {% elif task.grade < 75 %}grade-orange
+                    {% elif task.grade < 90 %}grade-gray
+                    {% else %}grade-green
+                    {% endif %}">
+            {{ task_submission.grade }}
+        </span>
+        <span class="grade-max">/100</span>
+        </div>
+    {% endif %}
+
+</div>
+{% endif %}
+{% if tasks %}
+<div class="content-container other-tasks-section">
+    <h2 class="section-title">Другие задания</h2>
+    <div class="assignment-cards">
+        {% for task in tasks %}
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-status {{ task.status_class }}">{{ task.status }}</div>
+                <div class="task-subject">{{ task.subject.name }}</div>
+                <div class="task-teacher">{{ task.teacher.name }}</div>
+            </div>
+                        
+            <h3 class="task-title">{{ task.title }}</h3>
+                        
+            <p class="task-description">
+                {{ task.description|truncatechars:100 }}
+            </p>
+                        
+            <div class="task-footer">
+                <div class="due-date">сдать до:<br><span class="date">{{ task.deadline|date:"d.m.Y" }}</span></div>
+                <div class="task-buttons">
+                    <a href="{% url 'task_detail' task.id %}" class="view-button desktop-button">Посмотреть</a>
+                    <a href="{% url 'task_detail' task.id %}" class="view-button mobile-button">Посмотреть</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}

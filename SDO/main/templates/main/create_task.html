@@ -4,6 +4,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/create_task.css' %}">
+<div class="content-container">
     <form method="post" enctype="multipart/form-data" class="task-form" id='taskForm'>
         <div class="form-header">
             <button type="submit" class="submit-button">сохранить</button>
@@ -60,6 +61,7 @@
         {% endif %}
         <button type="submit" class="mobile-save-button">Сохранить</button>
     </form>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('taskForm');
@@ -235,6 +237,14 @@ document.addEventListener('DOMContentLoaded', function() {
         updateFilePreview(dt.files);
         updateDropZoneText(dt.files);
     }
+    {% if is_edit and form.instance.file %}
+        const existingFile = {
+            name: '{{ form.instance.file.name|cut:"task_files/" }}',
+            size: '{{ form.instance.file.size|filesizeformat }}'
+        };
+        updateFilePreview([existingFile]);
+        updateDropZoneText([existingFile]);
+    {% endif %}
 });
 </script>
 {% endblock %}

@@ -417,7 +417,7 @@
     color: #e65100;
 }
 
-.task-status.в-работе {
+.task-status.in-progress {
     background-color: #e8f5e9;
     color: #2e7d32;
 }
@@ -504,3 +504,5 @@
     background-color: #ffebee;
     color: #c62828;
 }
+
+

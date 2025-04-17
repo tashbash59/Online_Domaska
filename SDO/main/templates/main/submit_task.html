@@ -1,0 +1,53 @@
+{% extends "main/header.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/task_detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/submit_task.css' %}">
+
+<div class="content-container">
+    <!-- Шапка с названием задания и кнопкой -->
+    <div class="submission-header">
+        <h1 class="submission-title">{{ task.title }}</h1>
+        <button type="submit" form="submission-form" class="save-button">Сохранить</button>
+    </div>
+
+    <!-- Форма для сдачи задания -->
+    <form method="post" enctype="multipart/form-data" id="submission-form" class="submission-form">
+        {% csrf_token %}
+        
+        <!-- Поле для текстового ответа -->
+        <div class="solution-field-container">
+            <textarea 
+                name="solution" 
+                id="id_solution" 
+                class="solution-textarea" 
+                placeholder="Введите ваш ответ здесь..."
+            >{% if form.solution.value %}{{ form.solution.value }}{% endif %}</textarea>
+        </div>
+        
+        <!-- Поле для загрузки файлов -->
+        <div class="file-upload-container">
+            <label for="id_solution_file" class="file-upload-label">
+                <div class="file-upload-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="#4285F4"/>
+                    </svg>
+                    <div class="file-upload-text">
+                        <div class="file-upload-title">Прикреплённые файлы</div>
+                        <div class="file-upload-subtitle">Выберите файлы или перетяните их сюда</div>
+                    </div>
+                    {{ form.solution_file }}
+                </div>
+            </label>
+            
+            {% if form.solution_file.value %}
+                <div class="current-file">
+                    Текущий файл: <a href="{{ form.solution_file.value.url }}">{{ form.solution_file.value.name }}</a>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% endblock %}

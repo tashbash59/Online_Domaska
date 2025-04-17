@@ -1,0 +1,140 @@
+{% extends 'main/header.html' %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/task_detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/submission_detail.css' %}">
+<div class="content-container .other-tasks-section">
+    
+    <div class="title_icon">
+        <!-- Название задачи -->
+        <h1 class="task-title">{{ submission.task.title }}</h1>
+    </div>
+
+    <div class="task-description">
+        {{ submission.task.description|linebreaks }}
+    </div>
+
+    <div class="task-files">
+        <h3 class="files-title">Прикреплённые файлы</h3>
+        <div class="files-list">
+            {% if submission.task.file %}
+            <div class="file-item">
+                <label for="file-{{ forloop.counter }}" class="file-link">
+                    <a href="{{ submission.task.file.url }}" download class="file-link">
+                        <span class="file-name">{{ submission.task.file.name|cut:"task_files/" }}</span>
+                    </a>
+                    <span class="file-size">{{ submission.task.file.size|filesizeformat }}</span>
+                </label>
+            </div>
+            {% else %}
+            <p class="no-files">Нет прикрепленных файлов</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="content-container grade-task">
+    <div class="task-title">
+        Ответ
+    </div>
+
+    <div class="task-description">
+        {{ submission.solution|linebreaks }}
+    </div>
+
+    <div class="task-files">
+        <h3 class="files-title">Прикреплённые файлы</h3>
+        <div class="files-list">
+            {% if submission.solution_file %}
+            <div class="file-item">
+                <label for="file-{{ forloop.counter }}" class="file-link">
+                    <a href="{{ submission.solution_file.url }}" download class="file-link">
+                        <span class="file-name">{{ submission.solution_file.name|cut:"task_files/" }}</span>
+                    </a>
+                    <span class="file-size">{{ submission.solution_file.size|filesizeformat }}</span>
+                </label>
+            </div>
+            {% else %}
+            <p class="no-files">Нет прикрепленных файлов</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="content-container grade-task">
+    <div class="task-title">
+        Оценить работу
+    </div>
+    <div class="card-body">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="grade-form-container">
+            <!-- Левая часть - оценка -->
+            <div class="grade-input-section">
+                <div class="form-label">Количество баллов</div>
+                {{ form.grade }}
+            </div>
+            
+            <!-- Правая часть - комментарий -->
+            <div class="comment-section">
+                <div class="form-label">Комментарий</div>
+                {{ form.teacher_comment }}
+            </div>
+        </div>
+        
+        <!-- Кнопки (появятся только на мобильных) -->
+        <div class="mobile-buttons">
+            <button type="submit" class="btn btn-primary save-btn">Сохранить</button>
+        </div>
+        <button type="submit" class="view-button desktop-button">Сохранить</button>
+    </form>
+    </div>
+    <!-- Описание задачи -->
+    <!-- <div class="task-description">
+        {{ task.description|linebreaks }}
+    </div>
+    <div class="container mt-4">
+        <h2>Ответ студента: {{ submission.student.get_full_name }}</h2>
+        <h4>Задание: {{ submission.task.title }}</h4>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Текстовый ответ:</h5>
+                <p class="card-text">{{ submission.solution|default:"Нет текстового ответа" }}</p>
+                
+                {% if submission.solution_file %}
+                <h5 class="card-title mt-3">Прикрепленный файл:</h5>
+                <a href="{{ submission.solution_file.url }}" class="btn btn-primary" download>
+                    Скачать файл ({{ submission.solution_file.name|slice:"-3:" }})
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Оценить работу</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_grade">Оценка (1-100):</label>
+                        {{ form.grade }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_teacher_comment">Комментарий преподавателя:</label>
+                        {{ form.teacher_comment }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success mt-3">Сохранить оценку</button>
+                    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary mt-3 ml-2">Назад</a>
+                </form>
+            </div>
+        </div>
+    </div> -->
+</div>
+{% endblock %}

@@ -1,24 +1,70 @@
-.task-detail-container {
-    max-width: 800px;
+/* Основные стили контейнеров */
+.content-container {
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 30px;
+    padding: 40px;
     background: white;
     border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.25);
 }
 
+
+.task-detail-section {
+    margin-bottom: 40px;
+    padding: 50px;
+}
+
+.other-tasks-section {
+    padding: 50px;
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Стили для карточек заданий */
+.assignment-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(1100px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.task-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 35px;
+    margin: 0 20px;
+    font-family: Arial, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Остальные стили остаются без изменений */
 .task-header {
     display: flex;
-    justify-content: space-between;
+    gap: 15px;
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
 }
 
-.task-meta {
+.task-header-deadline {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
 }
 
 .task-status {
@@ -28,7 +74,17 @@
     font-weight: 500;
 }
 
+.task-status.under_review {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+
 .task-status.new {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+.task-status.under_review {
     background-color: #e3f2fd;
     color: #0d47a1;
 }
@@ -48,10 +104,24 @@
     color: #2e7d32;
 }
 
+.task-status.graded {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
 .task-subject {
-    font-size: 18px;
-    color: #333;
-    font-weight: 500;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.task-subject::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #95a5a6;
 }
 
 .task-deadline {
@@ -70,51 +140,71 @@
     color: #333;
     font-weight: 600;
 }
+.task-teacher {
+    color: #7f8c8d;
+    font-size: 16px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.task-teacher::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #95a5a6;
+}
 
 .task-description {
     font-size: 16px;
     line-height: 1.6;
     color: #444;
     margin-bottom: 30px;
-    white-space: pre-wrap;
 }
 
 .task-files {
     margin-top: 30px;
     padding-top: 20px;
+    border-top: 1px solid #eee;
 }
 
 .files-title {
-    font-size: 18px;
-    margin-bottom: 15px;
+    font-size: 20px;
+    margin-bottom: 20px;
     color: #333;
 }
 
 .files-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 .file-item {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 12px 20px;
     background: #f8f9fa;
-    border-radius: 8px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.file-item:hover {
+    background: #eef2f7;
 }
 
 .file-link {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
     flex-grow: 1;
+    text-decoration: none;
 }
 
 .file-name {
     color: #4285f4;
     font-weight: 500;
+    font-size: 16px;
 }
 
 .file-size {
@@ -126,13 +216,234 @@
     color: #5f6368;
     font-style: italic;
 }
-.content-area p {
-     padding-left: 0px; 
+
+.task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    margin-top: 20px;
 }
 
-/* Чекбоксы */
-input[type="checkbox"] {
-    margin-right: 10px;
-    width: 16px;
-    height: 16px;
+.due-date {
+    font-size: 15px;
+    color: #95a5a6;
+}
+
+.due-date .date {
+    font-size: 17px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.view-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.view-button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* Адаптивные стили */
+@media (max-width: 1800px) {
+    .assignment-cards {
+        grid-template-columns: repeat(auto-fill, minmax(900px, 1fr));
+    }
+}
+
+@media (max-width: 1400px) {
+    .content-container {
+        padding: 35px;
+    }
+    
+    .assignment-cards {
+        grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
+    }
+    
+    .task-card {
+        padding: 30px;
+        margin: 0 15px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .content-container {
+        max-width: 100%;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 1000px) {
+    .assignment-cards {
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    }
+    
+    .task-detail-section,
+    .other-tasks-section {
+        padding: 30px;
+    }
+    
+    .task-card {
+        padding: 25px;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 700px) {
+    .content-container {
+        padding: 25px 20px;
+    }
+    
+    .assignment-cards {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .task-card {
+        padding: 20px;
+        margin: 0;
+    }
+    
+    .task-title {
+        font-size: 24px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 500px) {
+    .content-container {
+        padding: 20px 15px;
+    }
+    
+    .task-detail-section,
+    .other-tasks-section {
+        padding: 25px 15px;
+    }
+    
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .view-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.title_icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.link-icon-update {
+    height: 60px; /* Соответствует высоте текущего шрифта */
+    width: 60px; /* Сохраняет пропорции изображения */
+    margin-left: 10px; /* Добавляет небольшой отступ слева */
+}
+
+.mobile-button {
+        display: none;
+    }
+    
+    .task-buttons {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    @media (max-width: 768px) {
+        /* Скрытие десктопных кнопок и показ мобильных */
+        .desktop-button {
+            display: none;
+        }
+        
+        .mobile-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .mobile-button-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Адаптация карточек для мобильных */
+        .task-card {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 20px 0 !important;
+            border-bottom: 1px solid #eee !important;
+        }
+        
+        .task-card:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .assignment-cards {
+            gap: 0 !important;
+        }
+        
+        .task-buttons {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .task-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .due-date {
+            width: 100%;
+        }
+    }
+/* Стили для оценок */
+.grade {
+    font-weight: bold;
+    padding: 3px 0 3px 8px;
+    border-radius: 4px 0 0 4px;
+}
+.grade-max {
+    color: #6c757d; /* серый */
+    padding: 3px 8px 3px 0;
+    border-radius: 0 4px 4px 0;
+    font-weight: bold;
+}
+
+.grade-red {
+    color: #dc3545;
+}
+
+.grade-orange {
+    color: #fd7e14;
+}
+
+.grade-gray {
+    color: #3498db;
+}
+
+.grade-green {
+    color: #28a745;
 }

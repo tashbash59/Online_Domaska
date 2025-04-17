@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,  Group, Permission
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Role(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название роли', unique=True)
@@ -134,30 +135,79 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.title} ({self.subject.name})"
 
+# class TaskSubmission(models.Model):
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Задача')
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+#     solution = models.TextField(verbose_name='Решение')
+#     submitted_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата отправки')
+#     status = models.CharField(
+#         max_length=20,
+#         choices=[
+#             ('submitted', 'Отправлено'),
+#             ('checked', 'Проверено'),
+#             ('rejected', 'Отклонено'),
+#             ('accepted', 'Принято')
+#         ],
+#         default='submitted',
+#         verbose_name='Статус'
+#     )
+#     teacher_comment = models.TextField(blank=True, null=True, verbose_name='Комментарий преподавателя')
+
+#     class Meta:
+#         verbose_name = 'Отправка задачи'
+#         verbose_name_plural = 'Отправки задач'
+#         unique_together = ['task', 'student']
+
+#     def __str__(self):
+#         return f"Решение {self.student.name} для {self.task.title}"
+
+
 class TaskSubmission(models.Model):
+    STATUS_CHOICES = [
+        ('no_answer', 'Ответ не прикреплен'),
+        ('under_review', 'На проверке'),
+        ('graded', 'Оценено'),
+    ]
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE, verbose_name='Задача')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
-    solution = models.TextField(verbose_name='Решение')
-    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата отправки')
+    solution = models.TextField(blank=True, null=True, verbose_name='Решение')
+    solution_file = models.FileField(
+        upload_to='submissions/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name='Файл с решением'
+    )
+    submitted_at = models.DateTimeField(null=True, blank=True, verbose_name='Дата отправки')
     status = models.CharField(
         max_length=20,
-        choices=[
-            ('submitted', 'Отправлено'),
-            ('checked', 'Проверено'),
-            ('rejected', 'Отклонено'),
-            ('accepted', 'Принято')
-        ],
-        default='submitted',
+        choices=STATUS_CHOICES,
+        default='no_answer',
         verbose_name='Статус'
     )
+    grade = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Оценка',
+        validators=[MinValueValidator(1), MaxValueValidator(100)]
+    )
     teacher_comment = models.TextField(blank=True, null=True, verbose_name='Комментарий преподавателя')
+    checked_at = models.DateTimeField(null=True, blank=True, verbose_name='Дата проверки')
 
     class Meta:
-        verbose_name = 'Отправка задачи'
-        verbose_name_plural = 'Отправки задач'
+        verbose_name = 'Сдача задания'
+        verbose_name_plural = 'Сдачи заданий'
         unique_together = ['task', 'student']
+        ordering = ['-submitted_at']
 
     def __str__(self):
-        return f"Решение {self.student.name} для {self.task.title}"
+        return f"Сдача {self.task.title} от {self.student.name}"
 
-
+    def save(self, *args, **kwargs):
+        # Автоматически обновляем статус и дату отправки при добавлении решения
+        if self.solution or self.solution_file:
+            if self.status == 'no_answer':
+                self.status = 'under_review'
+            if not self.submitted_at:
+                self.submitted_at = timezone.now()
+        super().save(*args, **kwargs)
